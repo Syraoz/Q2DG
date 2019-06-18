@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EdgeBuilder : MonoBehaviour
+public class EdgeBuilder
 {
-    public Vector2 startPos;
-    public Vector2 endPos;
 
-    public void GenerateBase()
+    public void GenerateBase(Vector2 start, Vector2 end)
     {
         GameObject platform = new GameObject();
         platform.AddComponent<EdgeCollider2D>();
+        platform.name = "New Terrain";
 
-        platform.transform.position = startPos;
+        platform.transform.position = start;
         List<Vector2> tempArray = new List<Vector2>();
         float yValue = Random.Range(-1.0f, 1.0f);
 
-        for (int x = (int)startPos.x; x < (int)endPos.x; x++)
+        for (int x = (int)start.x; x < (int)end.x; x++)
         {
             tempArray.Add(new Vector2(x, yValue));
             yValue += Random.Range(-1.0f, 1.0f);
