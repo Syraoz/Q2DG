@@ -5,9 +5,17 @@ using UnityEngine;
 [System.Serializable]
 public class Path
 {
-
+    //Propieties
     [SerializeField,HideInInspector]
     List<Vector2> points;
+    EdgeCollider2D collider;
+
+    //Booleans
+    public bool hasCollider;
+
+    //Floats
+    private float offset;
+    private float amplitude;
 
     public Path(Vector2 startPos)
     {
@@ -65,5 +73,48 @@ public class Path
     public void MovePoint(int i, Vector2 pos)
     {
         points[i] = pos;
+    }
+
+    public float vOffset
+    {
+        get
+        {
+            return offset;
+        }
+        set
+        {
+            offset = value;
+        }
+    }
+
+    public float tAmplitude
+    {
+        get
+        {
+            return amplitude;
+        }
+        set
+        {
+            amplitude = value;
+        }
+    }
+
+    public void ToggleCollider()
+    {
+        if (!hasCollider)
+        {
+            hasCollider = !hasCollider;
+            collider = new EdgeCollider2D();
+        }
+        else
+        {
+            hasCollider = !hasCollider;
+            GameObject.Destroy(collider.gameObject);
+        }
+    }
+
+    public void UpdateCollider()
+    {
+
     }
 }

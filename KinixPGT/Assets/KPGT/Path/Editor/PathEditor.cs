@@ -20,6 +20,22 @@ public class PathEditor : Editor
             path = creator.path;
             SceneView.RepaintAll();
         }
+
+        if (GUILayout.Button(path.hasCollider ? "Toggle Collider OFF" : "Toggle Collider ON"))
+        {
+            path.ToggleCollider();
+        }
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Vertical Offset");
+        path.vOffset = EditorGUILayout.FloatField(path.vOffset);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Terrain Amplitude");
+        path.tAmplitude = EditorGUILayout.FloatField(path.tAmplitude);
+        EditorGUILayout.EndHorizontal();
+
     }
 
     void OnSceneGUI()
