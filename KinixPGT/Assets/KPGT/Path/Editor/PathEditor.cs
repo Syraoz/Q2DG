@@ -18,17 +18,19 @@ public class PathEditor : Editor
             Undo.RecordObject(creator, "Points reset");
             creator.GeneratePath();
             path = creator.path;
+            creator.UpdateCollider();
             SceneView.RepaintAll();
         }
 
-        if (GUILayout.Button(path.hasCollider ? "Toggle Collider OFF" : "Toggle Collider ON"))
+        if (GUILayout.Button(creator.GetComponent<EdgeCollider2D>() != null ? "Toggle Collider OFF" : "Toggle Collider ON"))
         {
-            path.ToggleCollider();
+            creator.ToggleCollider();
         }
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Vertical Offset");
         path.vOffset = EditorGUILayout.FloatField(path.vOffset);
+        creator.UpdateCollider();
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -53,6 +55,8 @@ public class PathEditor : Editor
         {
             Undo.RecordObject(creator, "Add point");
             path.AddPoint(mousePos);
+            creator.UpdateCollider();
+
         }
         if (guiEvent.type == EventType.MouseDown && guiEvent.button == 1 && guiEvent.shift)
         {
@@ -72,6 +76,7 @@ public class PathEditor : Editor
             {
                 Undo.RecordObject(creator, "Remove point");
                 path.RemovePoint(closestPointIndex);
+                creator.UpdateCollider();
             }
         }
     }

@@ -10,9 +10,6 @@ public class Path
     List<Vector2> points;
     EdgeCollider2D collider;
 
-    //Booleans
-    public bool hasCollider;
-
     //Floats
     private float offset;
     private float amplitude;
@@ -99,22 +96,4 @@ public class Path
         }
     }
 
-    public void ToggleCollider()
-    {
-        if (!hasCollider)
-        {
-            hasCollider = !hasCollider;
-            collider = new EdgeCollider2D();
-        }
-        else
-        {
-            hasCollider = !hasCollider;
-            GameObject.Destroy(collider.gameObject);
-        }
-    }
-
-    public void UpdateCollider()
-    {
-
-    }
 }
