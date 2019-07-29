@@ -27,15 +27,27 @@ public class PathEditor : Editor
             creator.ToggleCollider();
         }
 
+        if(GUILayout.Button("BETA Generate Terrain"))
+        {
+            Undo.RecordObject(creator, "Terrain Altered");
+            //randomize some points of the edge collider
+
+        }
+
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Vertical Offset");
-        path.vOffset = EditorGUILayout.FloatField(path.vOffset);
+        creator.VOffset = EditorGUILayout.FloatField(creator.VOffset);
         creator.UpdateCollider();
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Terrain Amplitude");
-        path.tAmplitude = EditorGUILayout.FloatField(path.tAmplitude);
+        GUILayout.Label("Amplitude");
+        creator.TAmplitude = EditorGUILayout.FloatField(creator.TAmplitude);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Details");
+        creator.TFrequency = EditorGUILayout.FloatField(creator.TFrequency);
         EditorGUILayout.EndHorizontal();
 
     }

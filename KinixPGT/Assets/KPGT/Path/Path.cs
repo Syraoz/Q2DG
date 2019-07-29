@@ -10,10 +10,6 @@ public class Path
     List<Vector2> points;
     EdgeCollider2D collider;
 
-    //Floats
-    private float offset;
-    private float amplitude;
-
     public Path(Vector2 startPos)
     {
         points = new List<Vector2>
@@ -71,29 +67,4 @@ public class Path
     {
         points[i] = pos;
     }
-
-    public float vOffset
-    {
-        get
-        {
-            return offset;
-        }
-        set
-        {
-            offset = value;
-        }
-    }
-
-    public float tAmplitude
-    {
-        get
-        {
-            return amplitude;
-        }
-        set
-        {
-            amplitude = value;
-        }
-    }
-
 }
