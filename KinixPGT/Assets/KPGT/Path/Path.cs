@@ -8,7 +8,6 @@ public class Path
     //Propieties
     [SerializeField,HideInInspector]
     List<Vector2> points;
-    EdgeCollider2D collider;
 
     public Path(Vector2 startPos)
     {

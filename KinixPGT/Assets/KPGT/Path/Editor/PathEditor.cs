@@ -30,8 +30,7 @@ public class PathEditor : Editor
         if(GUILayout.Button("BETA Generate Terrain"))
         {
             Undo.RecordObject(creator, "Terrain Altered");
-            //randomize some points of the edge collider
-
+            creator.RandomizeTerrain();
         }
 
         EditorGUILayout.BeginHorizontal();
@@ -42,12 +41,12 @@ public class PathEditor : Editor
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Amplitude");
-        creator.TAmplitude = EditorGUILayout.FloatField(creator.TAmplitude);
+        creator.TAmplitude = EditorGUILayout.IntField(creator.TAmplitude);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Details");
-        creator.TFrequency = EditorGUILayout.FloatField(creator.TFrequency);
+        creator.TFrequency = EditorGUILayout.IntField(creator.TFrequency);
         EditorGUILayout.EndHorizontal();
 
     }

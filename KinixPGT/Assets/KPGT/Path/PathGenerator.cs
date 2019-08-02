@@ -8,6 +8,7 @@ public class PathGenerator : MonoBehaviour
     [HideInInspector]
     public Path path;
     public List<Vector2> playerRoute;
+    public List<Vector2> noisedSegments;
 
     [HideInInspector]
     public EdgeCollider2D collider;
@@ -21,13 +22,14 @@ public class PathGenerator : MonoBehaviour
 
     //Floats
     private float offset;
-    private float amplitude;
-    private float frequency;
+    private int amplitude;
+    private int frequency;
+
 
     public void GeneratePath()
     {
         path = new Path(transform.position);
-    }
+    }   
 
     public void UpdateCollider()
     {
@@ -39,7 +41,7 @@ public class PathGenerator : MonoBehaviour
                 tempPoints[i].y -= offset;
             }
 
-            collider.points = tempPoints;
+           // collider.points = tempPoints;
         }
     }
 
@@ -62,35 +64,50 @@ public class PathGenerator : MonoBehaviour
         //add new points to each segment, the amount depends on frequency
         //run and give true to a bool to let know, we already made a generation to this route / terrain so there aren't more iterative generations
         //assign new possible y values relative to a noise using the amplitude (Perlin, to smooth out the heigh variations)
+        NoiseGeneration();
+
         if (collider != null)
         {
             float distanceX;
             float distanceY;
             float subDivisionX;
+            float subDivisionY;
 
             List<Vector2> tempPoints = new List<Vector2>();
+            List<Vector2> refPoints = new List<Vector2>(); 
 
-            foreach(Vector2 v in path.GetPoints)
+            foreach (Vector2 v in path.GetPoints)
             {
-                tempPoints.Add(v); //Convert to list for easy insertion
+                tempPoints.Add(v);
+                refPoints.Add(v);
             }
 
+
             for (int i = 0; i < path.NumSegments; i++)
-            {
-                distanceX = tempPoints[i + 1].x - tempPoints[i].x; //Distance between points, warning of negatives
-                distanceY = tempPoints[i + 1].y - tempPoints[i].y; //distance between points in y;
-
-                subDivisionX = Mathf.Abs(distanceX) / frequency + 1; //The distance between each subdivision in X
-
-                for (int s = 0; s < frequency; s++)
                 {
-                    Vector2 subDiv = new Vector2(tempPoints[i].x + subDivisionX * (s+1), 0);
+                distanceX = Mathf.Abs(refPoints[i + 1].x - refPoints[i].x);
+                distanceY = Mathf.Abs(refPoints[i + 1].y - refPoints[i].y); 
+                //CORRECTLY
 
-                    tempPoints.Insert(i, subDiv);
-                    //for each subdivision, the subDivisionX is multiplied by * "s", meaning in which subdivision we are.
+                subDivisionX = distanceX / (frequency + 1); 
+                subDivisionY = distanceY / (frequency + 1);
+
+                for (int s = 1; s < frequency + 1; s++)
+                {
+
+                    Vector2 subDiv = new Vector2(refPoints[i].x + subDivisionX * (s), refPoints[i].y + subDivisionY * (s));
+                    //WACK
+                    //Only works on uphills.
+
+                    tempPoints.Insert(i + ((frequency * i) + s), subDiv);
+                    //CORRECTLY
+
+                    //i = current main punt
+                    //Frequency * i = number of points we are skipping 
+                    //s = current sub-segment
+
                 }
 
-                //we need to find a way to put subdivisions relative to the frequency
                 //Later: a way to noise the positions as a toggable option. User can choose to keep it clean or not
                 //alter the height of the points with a perlin noise.
             }
@@ -116,7 +133,7 @@ public class PathGenerator : MonoBehaviour
         }
     }
 
-    public float TAmplitude
+    public int TAmplitude
     {
         get
         {
@@ -128,7 +145,7 @@ public class PathGenerator : MonoBehaviour
         }
     }
 
-    public float TFrequency
+    public int TFrequency
     {
         get
         {
