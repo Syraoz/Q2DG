@@ -13,6 +13,7 @@ public class PathGenerator : MonoBehaviour
     [HideInInspector]
     public EdgeCollider2D collider;
 
+    [SerializeField]
     private float[,] noiseMap;
 
     //Noise Tests:
@@ -68,13 +69,11 @@ public class PathGenerator : MonoBehaviour
 
         if (collider != null)
         {
-            float distanceX;
-            float distanceY;
-            float subDivisionX;
-            float subDivisionY;
+            Vector2 direction;
+            float magnitud;
 
             List<Vector2> tempPoints = new List<Vector2>();
-            List<Vector2> refPoints = new List<Vector2>(); 
+            List<Vector2> refPoints = new List<Vector2>();
 
             foreach (Vector2 v in path.GetPoints)
             {
@@ -84,22 +83,32 @@ public class PathGenerator : MonoBehaviour
 
 
             for (int i = 0; i < path.NumSegments; i++)
-                {
-                distanceX = Mathf.Abs(refPoints[i + 1].x - refPoints[i].x);
-                distanceY = Mathf.Abs(refPoints[i + 1].y - refPoints[i].y); 
+            {
+
+                direction = refPoints[i + 1] - refPoints[i];
+                magnitud = direction.magnitude;
+                direction.Normalize();
+                //New
+
+                //distance.x = Mathf.Abs(refPoints[i + 1].x - refPoints[i].x);
+                //distance.y = Mathf.Abs(refPoints[i + 1].y - refPoints[i].y); 
                 //CORRECTLY
 
-                subDivisionX = distanceX / (frequency + 1); 
-                subDivisionY = distanceY / (frequency + 1);
+                //subDivisionX = distance.x / (frequency + 1); 
+                //subDivisionY = distance.y / (frequency + 1);
 
                 for (int s = 1; s < frequency + 1; s++)
                 {
 
-                    Vector2 subDiv = new Vector2(refPoints[i].x + subDivisionX * (s), refPoints[i].y + subDivisionY * (s));
+                    tempPoints.Insert(i + (frequency * i) + s, refPoints[i] + direction * (magnitud / frequency) * s);
+                    //new
+
+                    //Vector2 subDiv = new Vector2(refPoints[i].x + subDivisionX * (s), refPoints[i].y + subDivisionY * (s));
                     //WACK
                     //Only works on uphills.
 
-                    tempPoints.Insert(i + ((frequency * i) + s), subDiv);
+                    //tempPoints.Insert(i + ((frequency * i) + s), subDiv);
+
                     //CORRECTLY
 
                     //i = current main punt
