@@ -4,21 +4,21 @@ using UnityEngine;
 
 public static class Noise
 {
-    public static float[,] GenerateNoiseMap(int width, int height, float scale)
+    public static float[,] GenerateNoiseMap(int width, int height, float density)
     {
-        float[,] noiseMap = new float[width, height];
+        float[,] noiseMap = new float[(int)(width * density), height];
 
-        if(scale <= 0)
+        if(density <= 0)
         {
-            scale = 0.0001f;
+            density = 0.0001f;
         }
 
         for(int y = 0; y < height; y++)
         {
-            for(int x = 0; x < width; x++)
+            for(int x = 0; x < width * density; x++)
             {
-                float sampleX = x / scale;
-                float sampleY = y / scale;
+                float sampleX = x / density;
+                float sampleY = y / density;
 
                 float perlinNoise = Mathf.PerlinNoise(sampleX, sampleY);
                 noiseMap[x, y] = perlinNoise;

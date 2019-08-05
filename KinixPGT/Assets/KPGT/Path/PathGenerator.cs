@@ -7,8 +7,8 @@ public class PathGenerator : MonoBehaviour
 
     [HideInInspector]
     public Path path;
-    public List<Vector2> playerRoute;
-    public List<Vector2> noisedSegments;
+    List<Vector2> playerRoute;
+    List<Vector2> noisedSegments;
 
     [HideInInspector]
     public EdgeCollider2D collider;
@@ -17,9 +17,8 @@ public class PathGenerator : MonoBehaviour
     private float[,] noiseMap;
 
     //Noise Tests:
-    public int mapW;
-    public int mapH;
-    public float noiseScale;
+    private int mapW = 10;
+    private int mapH = 1;
 
     //Floats
     private float offset;
@@ -61,26 +60,21 @@ public class PathGenerator : MonoBehaviour
 
     public void RandomizeTerrain()
     {
-        //get point x and point x + 1
         //add new points to each segment, the amount depends on frequency
-        //run and give true to a bool to let know, we already made a generation to this route / terrain so there aren't more iterative generations
-        //assign new possible y values relative to a noise using the amplitude (Perlin, to smooth out the heigh variations)
         NoiseGeneration();
 
         if (collider != null)
         {
-            Vector2 direction;
-            float magnitud;
-
             List<Vector2> tempPoints = new List<Vector2>();
             List<Vector2> refPoints = new List<Vector2>();
-
             foreach (Vector2 v in path.GetPoints)
             {
                 tempPoints.Add(v);
                 refPoints.Add(v);
             }
 
+            float magnitud;
+            Vector2 direction;
 
             for (int i = 0; i < path.NumSegments; i++)
             {
@@ -88,21 +82,27 @@ public class PathGenerator : MonoBehaviour
                 direction = refPoints[i + 1] - refPoints[i];
                 magnitud = direction.magnitude;
                 direction.Normalize();
-                //New
 
+                #region "Old Code"
                 //distance.x = Mathf.Abs(refPoints[i + 1].x - refPoints[i].x);
                 //distance.y = Mathf.Abs(refPoints[i + 1].y - refPoints[i].y); 
                 //CORRECTLY
 
                 //subDivisionX = distance.x / (frequency + 1); 
                 //subDivisionY = distance.y / (frequency + 1);
+                #endregion
 
                 for (int s = 1; s < frequency + 1; s++)
                 {
+                    Vector2 newPoint = refPoints[i] + direction * (magnitud / frequency) * s;
 
-                    tempPoints.Insert(i + (frequency * i) + s, refPoints[i] + direction * (magnitud / frequency) * s);
-                    //new
+                    int useNoiseAt = Random.Range(0, mapW * frequency);
+                    newPoint.y += noiseMap[useNoiseAt, 0] > 0.5 ? (noiseMap[useNoiseAt,0] * amplitude) : (-noiseMap[useNoiseAt, 0] * amplitude);
+                    newPoint.x += noiseMap[useNoiseAt, 0] > 0.5 ? (noiseMap[useNoiseAt, 0] * 0.3f) : (-noiseMap[useNoiseAt, 0] * 0.3f);
 
+                    tempPoints.Insert(i + (frequency * i) + s, newPoint);
+                    
+                    #region "Old Code"
                     //Vector2 subDiv = new Vector2(refPoints[i].x + subDivisionX * (s), refPoints[i].y + subDivisionY * (s));
                     //WACK
                     //Only works on uphills.
@@ -110,15 +110,8 @@ public class PathGenerator : MonoBehaviour
                     //tempPoints.Insert(i + ((frequency * i) + s), subDiv);
 
                     //CORRECTLY
-
-                    //i = current main punt
-                    //Frequency * i = number of points we are skipping 
-                    //s = current sub-segment
-
+                    #endregion
                 }
-
-                //Later: a way to noise the positions as a toggable option. User can choose to keep it clean or not
-                //alter the height of the points with a perlin noise.
             }
             collider.points = tempPoints.ToArray();
         }
@@ -126,8 +119,7 @@ public class PathGenerator : MonoBehaviour
 
     void NoiseGeneration()
     {
-        noiseMap = Noise.GenerateNoiseMap(mapW, mapH, noiseScale);
-        //generate a texture2d. Maybe slice one y row from the texture to use as the rng for the amplitude
+        noiseMap = Noise.GenerateNoiseMap(mapW, mapH, frequency);
     }
 
     public float VOffset
