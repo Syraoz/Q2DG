@@ -4,13 +4,19 @@ using UnityEngine;
 
 public static class Noise
 {
-    public static float[,] GenerateNoiseMap(int width, int height, float density)
+    //Width is how many values will be per segment
+    //Height should be 1 only, as we will be getting a single stripe of the noise map
+    //Densitiy, how many segments there are
+    //Amplitude, how higher or lower can the terrain go
+    //Escale, how crazy is the noise
+
+    public static float[,] GenerateNoiseMap(int width, int height, float density, float scale)
     {
         float[,] noiseMap = new float[(int)(width * density), height];
 
-        if(density <= 0)
+        if(scale <= 0)
         {
-            density = 0.0001f;
+            scale = 0.0001f;
         }
 
         for(int y = 0; y < height; y++)

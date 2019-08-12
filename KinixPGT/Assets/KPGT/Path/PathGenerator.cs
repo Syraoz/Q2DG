@@ -58,6 +58,15 @@ public class PathGenerator : MonoBehaviour
         }
     }
 
+    //WE might need a current Y for the algorithm, so even if the noise says the terrain should go higher, there's a few rules 
+    //that it must follow, so it goes higher again, but not by much
+
+    //A value to know what's the angle of the current segment
+    //A value of the angle formed between the previous and next segment 
+    //We might need a new type of data/object for each segment to store it's information so we can access it later on
+    //Including a normal vector, telling us where is it facing
+
+
     public void RandomizeTerrain()
     {
         //add new points to each segment, the amount depends on frequency
