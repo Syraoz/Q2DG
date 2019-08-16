@@ -41,7 +41,7 @@ public class PathEditor : Editor
 
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Amplitude");
-        creator.TAmplitude = EditorGUILayout.IntField(creator.TAmplitude);
+        creator.TAmplitude = EditorGUILayout.FloatField(creator.TAmplitude);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
