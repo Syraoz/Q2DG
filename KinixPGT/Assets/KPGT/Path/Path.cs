@@ -41,9 +41,9 @@ public class Path
         }
     }
 
-    ///
-    /// Summary:
-    /// Get the points of the path as a Vector2 Array.
+    /// <summary>
+    /// Get THE DAMN POINTS CJ
+    /// </summary>
     public Vector2[] GetPoints
     {
         get

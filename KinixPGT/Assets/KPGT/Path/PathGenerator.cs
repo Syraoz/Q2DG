@@ -24,6 +24,7 @@ public class PathGenerator : MonoBehaviour
     private float offset;
     private int amplitude;
     private int frequency;
+    private float scale;
 
 
     public void GeneratePath()
@@ -40,7 +41,6 @@ public class PathGenerator : MonoBehaviour
             {
                 tempPoints[i].y -= offset;
             }
-
            // collider.points = tempPoints;
         }
     }
@@ -61,15 +61,16 @@ public class PathGenerator : MonoBehaviour
     //WE might need a current Y for the algorithm, so even if the noise says the terrain should go higher, there's a few rules 
     //that it must follow, so it goes higher again, but not by much
 
-    //A value to know what's the angle of the current segment
-    //A value of the angle formed between the previous and next segment 
-    //We might need a new type of data/object for each segment to store it's information so we can access it later on
-    //Including a normal vector, telling us where is it facing
+    //A value of amplitude that tells the segment how much is it affected by the noise (FLOAT)
+    //A value of the current Y relative to the min and max Y to determine how much higher or lower it can go (FLOAT)
+    //A value to know what's the angle of the current segment (NORMAL)
+    //A value of the angle formed between the previous and next segment (CROSS ANGLES) 
+    //A value to keep track of the current Y (FLOAT)
 
+    //We might need a new type of data/object for each segment to store it's information so we can access it later on 
 
     public void RandomizeTerrain()
     {
-        //add new points to each segment, the amount depends on frequency
         NoiseGeneration();
 
         if (collider != null)
@@ -103,13 +104,15 @@ public class PathGenerator : MonoBehaviour
 
                 for (int s = 1; s < frequency + 1; s++)
                 {
-                    Vector2 newPoint = refPoints[i] + direction * (magnitud / frequency) * s;
+                    Vector2 newPoint = refPoints[i] + direction * (magnitud / frequency - 1) * (s);
 
                     int useNoiseAt = Random.Range(0, mapW * frequency);
+
+
                     newPoint.y += noiseMap[useNoiseAt, 0] > 0.5 ? (noiseMap[useNoiseAt,0] * amplitude) : (-noiseMap[useNoiseAt, 0] * amplitude);
                     newPoint.x += noiseMap[useNoiseAt, 0] > 0.5 ? (noiseMap[useNoiseAt, 0] * 0.3f) : (-noiseMap[useNoiseAt, 0] * 0.3f);
 
-                    tempPoints.Insert(i + (frequency * i) + s, newPoint);
+                    tempPoints.Insert(i + (frequency * i) + (s), newPoint);
                     
                     #region "Old Code"
                     //Vector2 subDiv = new Vector2(refPoints[i].x + subDivisionX * (s), refPoints[i].y + subDivisionY * (s));
@@ -128,7 +131,7 @@ public class PathGenerator : MonoBehaviour
 
     void NoiseGeneration()
     {
-        noiseMap = Noise.GenerateNoiseMap(mapW, mapH, frequency);
+        noiseMap = Noise.GenerateNoiseMap(mapW, mapH, frequency, scale);
     }
 
     public float VOffset
@@ -164,6 +167,18 @@ public class PathGenerator : MonoBehaviour
         set
         {
             frequency = value;
+        }
+    }
+
+    public float NScale
+    {
+        get
+        {
+            return scale;
+        }
+        set
+        {
+            scale = value;
         }
     }
 }
