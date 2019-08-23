@@ -22,7 +22,7 @@ public class PathEditor : Editor
             SceneView.RepaintAll();
         }
 
-        if (GUILayout.Button(creator.GetComponent<EdgeCollider2D>() != null ? "Toggle Collider OFF" : "Toggle Collider ON"))
+        if (GUILayout.Button(creator.GetComponent<EdgeCollider2D>() != null ? "Collider ON" : "Collider OFF"))
         {
             creator.ToggleCollider();
         }
@@ -48,6 +48,11 @@ public class PathEditor : Editor
         GUILayout.Label("Details");
         creator.TFrequency = EditorGUILayout.IntField(creator.TFrequency);
         EditorGUILayout.EndHorizontal();
+
+        if (GUILayout.Button("Open Terrain exporter"))
+        {
+            ExporterEditor.ShowExporter();
+        }
 
     }
 
