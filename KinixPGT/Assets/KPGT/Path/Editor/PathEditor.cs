@@ -27,7 +27,7 @@ public class PathEditor : Editor
             creator.ToggleCollider();
         }
 
-        if(GUILayout.Button("BETA Generate Terrain"))
+        if(GUILayout.Button("Generate Terrain"))
         {
             Undo.RecordObject(creator, "Terrain Altered");
             creator.RandomizeTerrain();
@@ -51,6 +51,7 @@ public class PathEditor : Editor
 
         if (GUILayout.Button("Open Terrain exporter"))
         {
+            ExporterEditor.terrain.currentPath = creator;
             ExporterEditor.ShowExporter();
         }
 
