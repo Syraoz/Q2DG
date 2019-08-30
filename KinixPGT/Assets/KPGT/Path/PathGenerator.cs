@@ -5,6 +5,11 @@ using UnityEngine;
 public class PathGenerator : MonoBehaviour
 {
 
+    public enum SEType
+    {
+        none, cliff, wall
+    };
+
     [HideInInspector]
     public Path path;
     List<Vector2> playerRoute;
@@ -21,10 +26,14 @@ public class PathGenerator : MonoBehaviour
     private int mapH = 1;
 
     //Floats
-    private float offset;
+    private float seValue;
     private float amplitude;
     private int frequency;
     private float scale;
+
+    //Start End Types
+    private SEType terrainStart;
+    private SEType terrainEnd;
 
 
     public void GeneratePath()
@@ -36,11 +45,12 @@ public class PathGenerator : MonoBehaviour
     {
         if (collider != null)
         {
-            Vector2[] tempPoints = path.GetPoints;
+            /*Vector2[] tempPoints = path.GetPoints;
             for (int i = 0; i < path.NumPoints; i++)
             {
                 tempPoints[i].y -= offset;
             }
+            */
            RandomizeTerrain();
         }
     }
@@ -132,6 +142,24 @@ public class PathGenerator : MonoBehaviour
 
                 tempPoints[i] += ((new Vector2(x,y)*2F) - new Vector2(1,1)) * 2;
             }
+
+            if(terrainStart == SEType.cliff)
+            {
+                tempPoints.Insert(0, new Vector2(tempPoints[0].x, tempPoints[0].y - seValue));
+            }
+            if(terrainStart == SEType.wall)
+            {
+                tempPoints.Insert(0, new Vector2(tempPoints[0].x, tempPoints[0].y + seValue));
+            }
+            if(terrainEnd == SEType.cliff)
+            {
+                tempPoints.Insert(tempPoints.Count, new Vector2(tempPoints[tempPoints.Count-1].x, tempPoints[tempPoints.Count-1].y - seValue));
+            }
+            if(terrainEnd == SEType.wall)
+            {
+                tempPoints.Insert(tempPoints.Count, new Vector2(tempPoints[tempPoints.Count-1].x, tempPoints[tempPoints.Count-1].y + seValue));
+            }
+
             collider.points = tempPoints.ToArray();
         }
 
@@ -146,11 +174,11 @@ public class PathGenerator : MonoBehaviour
     {
         get
         {
-            return offset;
+            return seValue;
         }
         set
         {
-            offset = value;
+            seValue = value;
         }
     }
 
@@ -187,6 +215,30 @@ public class PathGenerator : MonoBehaviour
         set
         {
             scale = value;
+        }
+    }
+    
+    public SEType EndTerrain
+    {
+        get
+        {
+            return terrainEnd;
+        }
+        set
+        {
+            terrainEnd = value;
+        }
+    }
+
+    public SEType StartTerrain
+    {
+        get
+        {
+            return terrainStart;
+        }
+        set
+        {
+            terrainStart = value;
         }
     }
 }

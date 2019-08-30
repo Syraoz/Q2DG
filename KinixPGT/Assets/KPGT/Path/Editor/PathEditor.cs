@@ -34,12 +34,6 @@ public class PathEditor : Editor
         }
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Vertical Offset");
-        creator.VOffset = EditorGUILayout.FloatField(creator.VOffset);
-        creator.UpdateCollider();
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Amplitude");
         creator.TAmplitude = EditorGUILayout.FloatField(creator.TAmplitude);
         EditorGUILayout.EndHorizontal();
@@ -47,6 +41,22 @@ public class PathEditor : Editor
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Details");
         creator.TFrequency = EditorGUILayout.IntField(creator.TFrequency);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Offset");
+        creator.VOffset = EditorGUILayout.FloatField(creator.VOffset);
+        creator.UpdateCollider();
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Start Type");
+        creator.StartTerrain = (PathGenerator.SEType)EditorGUILayout.EnumPopup(creator.StartTerrain);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("End Type");
+        creator.EndTerrain = (PathGenerator.SEType)EditorGUILayout.EnumPopup(creator.EndTerrain);
         EditorGUILayout.EndHorizontal();
 
         if (GUILayout.Button("Open Terrain exporter"))
