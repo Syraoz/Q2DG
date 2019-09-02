@@ -10,11 +10,12 @@ public class TerrainExporter
     private Color colliderColor;
     private int ppi;
     private string fileName;
+    private int margin;
 
     private Texture2D bgPicture;
 
-    private int textureWidth;
-    private int textureHeight;
+    private float textureWidth;
+    private float textureHeight;
 
     public PathGenerator currentPath;
 
@@ -33,56 +34,118 @@ public class TerrainExporter
         Vector2 minPos = new Vector2(0,0);
 
         List<Vector2> tempPoints = new List<Vector2>();
+        List<Vector2> correctPoints = new List<Vector2>();
 
-       // maxPos.Set(currentPath.path.GetPoints[0].x, currentPath.path.GetPoints[0].y);
-       // minPos.Set(currentPath.path.GetPoints[0].x, currentPath.path.GetPoints[0].y);
+        // maxPos.Set(currentPath.path.GetPoints[0].x, currentPath.path.GetPoints[0].y);
+        // minPos.Set(currentPath.path.GetPoints[0].x, currentPath.path.GetPoints[0].y);
 
-        foreach (Vector2 v in currentPath.path.GetPoints)
+        if (currentPath != null)
         {
-            if(minPos.x > v.x)
+
+            foreach (Vector2 v in currentPath.collider.points)
             {
-                minPos.x = v.x;
-            }
-            if (minPos.y > v.y)
+                if (minPos.x > v.x)
+                {
+                    minPos.x = v.x;
+                }
+                if (minPos.y > v.y)
+                {
+                    minPos.y = v.y;
+                }
+                if (maxPos.x < v.x)
+                {
+                    maxPos.x = v.x;
+                }
+                if (maxPos.y < v.y)
+                {
+                    maxPos.y = v.y;
+                }
+
+                tempPoints.Add(v);
+            } 
+
+            textureWidth = Vector2.Distance(new Vector2(minPos.x, 0), new Vector2(maxPos.x, 0));
+            textureHeight = Vector2.Distance(new Vector2(0, minPos.y), new Vector2(0, maxPos.y));
+            if (ppi < 1)
             {
-                minPos.y = v.y;
-            }
-            if (maxPos.x < v.x)
-            {
-                maxPos.x = v.x;
-            }
-            if (maxPos.y < v.y)
-            {
-                maxPos.y = v.y;
+                ppi = 1;
             }
 
-            tempPoints.Add(v);
+            bgPicture = new Texture2D((int)(textureWidth * ppi) + 5 + margin, (int)(textureHeight * ppi) + 5 + margin);
+
+            correctPoints = CenterCollider(tempPoints, minPos);
+
+            SetBackgroundColor();
+
+            for (int i = 0; i < correctPoints.Count - 1; i++)
+            {
+                DrawLine(correctPoints[i], correctPoints[i + 1], colliderColor);
+            }
         }
-
-        textureWidth = (int)Vector2.Distance(new Vector2(minPos.x, 0), new Vector2(maxPos.x, 0)) + 1;
-        textureHeight = (int)Vector2.Distance(new Vector2(0, minPos.y), new Vector2(0, maxPos.y)) + 1;
-        if(ppi < 1)
+        else
         {
-            ppi = 1;
-        }
-
-        bgPicture = new Texture2D(textureWidth * ppi, textureHeight * ppi);
-
-        for(int i = 0; i < tempPoints.Count - 1; i++)
-        {
-            DrawLine(tempPoints[i], tempPoints[i + 1], colliderColor);
+            Debug.LogError("Terrain not selected");
         }
     }
 
     void SetBackgroundColor()
     {
+        for(int i = 0; i < bgPicture.width; i++)
+        {
+            for(int j = 0; j < bgPicture.height; j++)
+            {
+                bgPicture.SetPixel(i, j, backgroundColor);
+            }
+        }
+    }
 
+    List<Vector2> CenterCollider(List<Vector2> tPs, Vector2 minPos)
+    {
+        List<Vector2> correctPositions = new List<Vector2>();
+
+        if(minPos.x > 0)
+        { //RESTA X
+            if (minPos.y > 0)
+            { //RESTA Y
+                foreach(Vector2 v in tPs)
+                {
+                    correctPositions.Add(new Vector2(v.x - Mathf.Abs(minPos.x), v.y - Mathf.Abs(minPos.y)));
+                }
+            }
+            else if (minPos.y < 0)
+            { //SUMA Y
+                foreach (Vector2 v in tPs)
+                {
+                    correctPositions.Add(new Vector2(v.x - Mathf.Abs(minPos.x), v.y + Mathf.Abs(minPos.y)));
+                }
+            }
+        }
+        else if (minPos.x < 0)
+        { //SUMA X
+            if (minPos.y > 0)
+            { //RESTA Y
+                foreach (Vector2 v in tPs)
+                {
+                    correctPositions.Add(new Vector2(v.x + Mathf.Abs(minPos.x), v.y - Mathf.Abs(minPos.y)));
+                }
+            }
+            else if (minPos.y < 0)
+            { //SUMA Y
+                foreach (Vector2 v in tPs)
+                {
+                    correctPositions.Add(new Vector2(v.x + Mathf.Abs(minPos.x), v.y + Mathf.Abs(minPos.y)));
+                }
+            }
+        }
+
+        return correctPositions;
     }
 
     public void DrawLine(Vector2 p1, Vector2 p2, Color color)
     {
-        int width = (int)((p2.x - p1.x)/*ppi*/);
-        int height = (int)((p2.y - p1.y)/*ppi*/);
+
+        int width = (int)((p2.x * ppi) - (p1.x * ppi) + 1);
+        int height = (int)((p2.y * ppi) - (p1.y * ppi) + 1);
         int dx1, dy1, dx2, dy2;
 
         dx1 = 0;
@@ -99,12 +162,12 @@ public class TerrainExporter
         if (width < 0) { dx2 = -1; }
         else if (width > 0) { dx2 = 1; }
 
-        int maxWidth = Mathf.Abs(width);
-        int maxHeight = Mathf.Abs(height);
-        if (!(maxWidth > maxHeight))
+        int longest = Mathf.Abs(width);
+        int shortest = Mathf.Abs(height);
+        if (!(longest > shortest))
         {
-            maxWidth = Mathf.Abs(height);
-            maxHeight = Mathf.Abs(width);
+            longest = Mathf.Abs(height);
+            shortest = Mathf.Abs(width);
 
             if (height < 0)
             {
@@ -116,16 +179,17 @@ public class TerrainExporter
             dx2 = 0;
         }
 
-        int numerator = maxWidth >> 1;
-        int drawingX = (int)p1.x;
-        int drawingY = (int)p1.y;
-        for(int i = 0; i <= maxWidth; i++)
+        int numerator = longest >> 1;
+        int drawingX = (int)(p1.x* ppi +1);
+        int drawingY = (int)(p1.y* ppi +1);
+
+        for(int i = 0; i <= longest; i++)
         {
-            bgPicture.SetPixel(drawingX, drawingY, color);
-            numerator += maxHeight;
-            if(!(numerator < maxWidth))
+            bgPicture.SetPixel(drawingX + (margin / 2), drawingY + (margin / 2), color);
+            numerator += shortest;
+            if(!(numerator < longest))
             {
-                numerator -= maxWidth;
+                numerator -= longest;
                 drawingX += dx1;
                 drawingY += dy1;
             }
@@ -179,6 +243,18 @@ public class TerrainExporter
         set
         {
             fileName = value;
+        }
+    }
+
+    public int Margin
+    {
+        get
+        {
+            return margin;
+        }
+        set
+        {
+            margin = value;
         }
     }
 }

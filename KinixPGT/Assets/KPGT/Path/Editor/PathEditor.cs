@@ -59,7 +59,7 @@ public class PathEditor : Editor
         creator.EndTerrain = (PathGenerator.SEType)EditorGUILayout.EnumPopup(creator.EndTerrain);
         EditorGUILayout.EndHorizontal();
 
-        if (GUILayout.Button("Open Terrain exporter"))
+        if (GUILayout.Button("Open Terrain Exporter"))
         {
             ExporterEditor.terrain.currentPath = creator;
             ExporterEditor.ShowExporter();

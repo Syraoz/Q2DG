@@ -10,11 +10,16 @@ public class ExporterEditor : EditorWindow
     public static void ShowExporter()
     {
         ExporterEditor window = GetWindow<ExporterEditor>("Terrain Exporter");
+        window.minSize = new Vector2(500, 250);
     }
 
     void OnGUI()
     {
-        
+        GUILayout.Label("Exporter");
+        GUILayout.Label(terrain.Name);
+
+        GUILayout.Space(20);
+
         EditorGUILayout.BeginHorizontal();
         GUILayout.Label("Background Color");
         terrain.BGColor = EditorGUILayout.ColorField(terrain.BGColor);
@@ -26,7 +31,7 @@ public class ExporterEditor : EditorWindow
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("File name");
+        GUILayout.Label("File Name");
         terrain.Name = EditorGUILayout.TextField(terrain.Name);
         EditorGUILayout.EndHorizontal();
     
@@ -35,7 +40,12 @@ public class ExporterEditor : EditorWindow
         terrain.PixelsPerUnit = EditorGUILayout.IntField(terrain.PixelsPerUnit);
         EditorGUILayout.EndHorizontal();
 
-        if (GUILayout.Button("Export as png"))
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Image Margin");
+        terrain.Margin = EditorGUILayout.IntField(terrain.Margin);
+        EditorGUILayout.EndHorizontal();
+
+        if (GUILayout.Button("Export as .png"))
         {
             GUIContent gUI = new GUIContent
             {
