@@ -2,10 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System;
 
 [System.Serializable]
 public class TerrainExporter
 {
+    public enum ExportFormat
+    {
+        PNG, JPG, TGA
+    }
+
     private Color backgroundColor;
     private Color colliderColor;
     private int ppi;
@@ -13,25 +19,63 @@ public class TerrainExporter
     private int margin;
 
     private Texture2D bgPicture;
+    private ExportFormat imgFormat;
 
     private float textureWidth;
     private float textureHeight;
 
     public PathGenerator currentPath;
 
-    public void ExportToPng()
-    {
-        DrawColliderToTexture();
+    public bool ExportTerrainAs()
+    { 
 
-        //function to save and check if the file was saved
-        byte[] itemBGBytes = bgPicture.EncodeToPNG();
-        File.WriteAllBytes(Application.dataPath + "/KPGT/ExportedImages/" + fileName + ".png" , itemBGBytes);
+        DrawColliderToTexture();
+        byte[] itemBGBytes;
+        string formatType;
+
+        switch (imgFormat)
+        {
+            case ExportFormat.PNG:
+                itemBGBytes = bgPicture.EncodeToPNG();
+                formatType = ".png";
+                break;
+            case ExportFormat.JPG:
+                itemBGBytes = bgPicture.EncodeToJPG(100);
+                formatType = ".jpg";
+                break;
+            case ExportFormat.TGA:
+                itemBGBytes = bgPicture.EncodeToTGA();
+                formatType = ".tga";
+                break;
+            default:
+                itemBGBytes = bgPicture.EncodeToPNG();
+                formatType = ".png";
+                break;
+        }
+
+        ///TODO: Write a code that generated the path if it doesnt exist to avoid any expection
+        string checkDir = Application.dataPath + "/KPGT/ExportedImages/";
+        if (!Directory.Exists(checkDir))
+        {
+            Directory.CreateDirectory(Application.dataPath + "/KPGT/ExportedImages/");
+        }
+        try
+        {
+            File.WriteAllBytes(Application.dataPath + "/KPGT/ExportedImages/" + fileName + formatType, itemBGBytes);
+            return true;
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning("Failed to save data. Error: " + e.Message);
+            return false;
+        }
     }
+
 
     void DrawColliderToTexture()
     {
-        Vector2 maxPos = new Vector2(0,0);
-        Vector2 minPos = new Vector2(0,0);
+        Vector2 maxPos = new Vector2(0, 0);
+        Vector2 minPos = new Vector2(0, 0);
 
         List<Vector2> tempPoints = new List<Vector2>();
         List<Vector2> correctPoints = new List<Vector2>();
@@ -39,53 +83,48 @@ public class TerrainExporter
         // maxPos.Set(currentPath.path.GetPoints[0].x, currentPath.path.GetPoints[0].y);
         // minPos.Set(currentPath.path.GetPoints[0].x, currentPath.path.GetPoints[0].y);
 
-        if (currentPath != null)
+
+
+        foreach (Vector2 v in currentPath.collider.points)
         {
-
-            foreach (Vector2 v in currentPath.collider.points)
+            if (minPos.x > v.x)
             {
-                if (minPos.x > v.x)
-                {
-                    minPos.x = v.x;
-                }
-                if (minPos.y > v.y)
-                {
-                    minPos.y = v.y;
-                }
-                if (maxPos.x < v.x)
-                {
-                    maxPos.x = v.x;
-                }
-                if (maxPos.y < v.y)
-                {
-                    maxPos.y = v.y;
-                }
-
-                tempPoints.Add(v);
-            } 
-
-            textureWidth = Vector2.Distance(new Vector2(minPos.x, 0), new Vector2(maxPos.x, 0));
-            textureHeight = Vector2.Distance(new Vector2(0, minPos.y), new Vector2(0, maxPos.y));
-            if (ppi < 1)
+                minPos.x = v.x;
+            }
+            if (minPos.y > v.y)
             {
-                ppi = 1;
+                minPos.y = v.y;
+            }
+            if (maxPos.x < v.x)
+            {
+                maxPos.x = v.x;
+            }
+            if (maxPos.y < v.y)
+            {
+                maxPos.y = v.y;
             }
 
-            bgPicture = new Texture2D((int)(textureWidth * ppi) + 5 + margin, (int)(textureHeight * ppi) + 5 + margin);
-
-            correctPoints = CenterCollider(tempPoints, minPos);
-
-            SetBackgroundColor();
-
-            for (int i = 0; i < correctPoints.Count - 1; i++)
-            {
-                DrawLine(correctPoints[i], correctPoints[i + 1], colliderColor);
-            }
+            tempPoints.Add(v);
         }
-        else
+
+        textureWidth = Vector2.Distance(new Vector2(minPos.x, 0), new Vector2(maxPos.x, 0));
+        textureHeight = Vector2.Distance(new Vector2(0, minPos.y), new Vector2(0, maxPos.y));
+        if (ppi < 1)
         {
-            Debug.LogError("Terrain not selected");
+            ppi = 1;
         }
+
+        bgPicture = new Texture2D((int)(textureWidth * ppi) + 5 + margin, (int)(textureHeight * ppi) + 5 + margin);
+
+        correctPoints = CenterCollider(tempPoints, minPos);
+
+        SetBackgroundColor();
+
+        for (int i = 0; i < correctPoints.Count - 1; i++)
+        {
+            DrawLine(correctPoints[i], correctPoints[i + 1], colliderColor);
+        }
+
     }
 
     void SetBackgroundColor()
@@ -255,6 +294,18 @@ public class TerrainExporter
         set
         {
             margin = value;
+        }
+    }
+
+    public ExportFormat ImageFormat
+    {
+        get
+        {
+            return imgFormat;
+        }
+        set
+        {
+            imgFormat = value;
         }
     }
 }
