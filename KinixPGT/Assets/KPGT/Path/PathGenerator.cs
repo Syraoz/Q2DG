@@ -31,6 +31,8 @@ public class PathGenerator : MonoBehaviour
     private int frequency;
     private float scale;
 
+    private int currentSeed;
+
     //Start End Types
     private SEType terrainStart;
     private SEType terrainEnd;
@@ -135,11 +137,19 @@ public class PathGenerator : MonoBehaviour
                     #endregion
                 }
             }
+                Random.InitState(currentSeed);
+      
+                float offsetRandomX = Random.value * 100000;
+                float offsetRandomY = Random.value * 100000;
+
             for (int i = 0; i < tempPoints.Count; i++)
             {
-                float x = Mathf.PerlinNoise(i * amplitude / tempPoints.Count, 0);
-                float y = Mathf.PerlinNoise(i * amplitude / tempPoints.Count, 1000);
 
+                float x = Mathf.PerlinNoise(i * amplitude / tempPoints.Count + offsetRandomX, 0 + offsetRandomY);
+                float y = Mathf.PerlinNoise(i * amplitude / tempPoints.Count + offsetRandomX, 1000 + offsetRandomY);
+               
+               
+               
                 tempPoints[i] += ((new Vector2(x,y)*2F) - new Vector2(1,1)) * 2;
             }
 
@@ -239,6 +249,18 @@ public class PathGenerator : MonoBehaviour
         set
         {
             terrainStart = value;
+        }
+    }
+
+    public int Seed
+    {
+        get
+        {
+            return currentSeed;
+        }
+        set
+        {
+            currentSeed = value;
         }
     }
 }
