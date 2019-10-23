@@ -47,12 +47,6 @@ public class PathGenerator : MonoBehaviour
     {
         if (collider != null)
         {
-            /*Vector2[] tempPoints = path.GetPoints;
-            for (int i = 0; i < path.NumPoints; i++)
-            {
-                tempPoints[i].y -= offset;
-            }
-            */
            RandomizeTerrain();
         }
     }
@@ -70,23 +64,28 @@ public class PathGenerator : MonoBehaviour
         }
     }
 
-    //WE might need a current Y for the algorithm, so even if the noise says the terrain should go higher, there's a few rules 
+    //We might need a current Y for the algorithm, so even if the noise says the terrain should go higher, there's a few rules 
     //that it must follow, so it goes higher again, but not by much
 
-    //A value of amplitude that tells the segment how much is it affected by the noise in height terms (FLOAT)
-    //A value of the current Y relative to the min and max Y to determine how much higher or lower it can go (FLOAT)
+    //We also need to apply this to the X value, by a much much much smaller value as the points can end up crossing their X values
+    //making intersections in the collider
+
+    //A value of amplitude relates to the scale of the noise
     //A value to know what's the angle of the current segment (NORMAL)
     //A value of the angle formed between the previous and next segment (CROSS ANGLES) 
-    //A value to keep track of the current Y (FLOAT)
 
     //We might need a new type of data/object for each segment to store it's information so we can access it later on 
 
     public void RandomizeTerrain()
     {
+
         NoiseGeneration();
 
         if (collider != null)
         {
+            //Subdivision
+            //Final product is a subdivided list of points of the edge collider: tempPoints
+
             List<Vector2> tempPoints = new List<Vector2>();
             List<Vector2> refPoints = new List<Vector2>();
             foreach (Vector2 v in path.GetPoints)
@@ -100,57 +99,16 @@ public class PathGenerator : MonoBehaviour
 
             for (int i = 0; i < path.NumSegments; i++)
             {
-
                 direction = refPoints[i + 1] - refPoints[i];
                 magnitud = direction.magnitude;
                 direction.Normalize();
 
-                #region "Old Code"
-                //distance.x = Mathf.Abs(refPoints[i + 1].x - refPoints[i].x);
-                //distance.y = Mathf.Abs(refPoints[i + 1].y - refPoints[i].y); 
-                //CORRECTLY
-
-                //subDivisionX = distance.x / (frequency + 1); 
-                //subDivisionY = distance.y / (frequency + 1);
-                #endregion
-
                 for (int s = 1; s < frequency;  s++)
                 {
                     Vector2 newPoint = refPoints[i] + direction * (magnitud / frequency) * (s);
-
-                    int useNoiseAt = Random.Range(0, mapW * frequency);
-
-
-                    //newPoint.y += noiseMap[useNoiseAt, 0] > 0.5 ? (noiseMap[useNoiseAt,0] * (amplitude - 4)) : (-noiseMap[useNoiseAt, 0] * (amplitude - 4));
-                    //newPoint.x += noiseMap[useNoiseAt, 0] > 0.5 ? (noiseMap[useNoiseAt, 0] * 0.3f) : (-noiseMap[useNoiseAt, 0] * 0.3f);
-
                     tempPoints.Insert(i + ((frequency - 1) * i) + (s), newPoint);
-                    
-                    #region "Old Code"
-                    //Vector2 subDiv = new Vector2(refPoints[i].x + subDivisionX * (s), refPoints[i].y + subDivisionY * (s));
-                    //WACK
-                    //Only works on uphills.
-
-                    //tempPoints.Insert(i + ((frequency * i) + s), subDiv);
-
-                    //CORRECTLY
-                    #endregion
+                   
                 }
-            }
-                Random.InitState(currentSeed);
-      
-                float offsetRandomX = Random.value * 100000;
-                float offsetRandomY = Random.value * 100000;
-
-            for (int i = 0; i < tempPoints.Count; i++)
-            {
-
-                float x = Mathf.PerlinNoise(i * amplitude / tempPoints.Count + offsetRandomX, 0 + offsetRandomY);
-                float y = Mathf.PerlinNoise(i * amplitude / tempPoints.Count + offsetRandomX, 1000 + offsetRandomY);
-               
-               
-               
-                tempPoints[i] += ((new Vector2(x,y)*2F) - new Vector2(1,1)) * 2;
             }
 
             if(terrainStart == SEType.cliff)
@@ -168,6 +126,28 @@ public class PathGenerator : MonoBehaviour
             if(terrainEnd == SEType.wall)
             {
                 tempPoints.Insert(tempPoints.Count, new Vector2(tempPoints[tempPoints.Count-1].x, tempPoints[tempPoints.Count-1].y + seValue));
+            }
+
+            if (!(amplitude <= 0))
+            {
+                Random.InitState(currentSeed);
+
+                float offsetRandomX = Random.value * 1000;
+                float offsetRandomY = Random.value * 1000;
+
+                for (int i = 0; i < tempPoints.Count; i++)
+                {
+
+                    // Nuevas capas de ruidos, no todo en uno solo
+
+                    float x = Mathf.PerlinNoise(i * (amplitude / 10 ) / tempPoints.Count + offsetRandomX, 0 + offsetRandomY);
+                    float y = Mathf.PerlinNoise(i * amplitude / tempPoints.Count + offsetRandomX, 1000 + offsetRandomY);
+
+
+
+                    tempPoints[i] += ((new Vector2(x, y) * 2F) - new Vector2(1, 1)) * 2;
+                }
+
             }
 
             collider.points = tempPoints.ToArray();

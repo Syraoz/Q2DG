@@ -32,7 +32,7 @@ public class TerrainExporter
         DrawColliderToTexture();
         byte[] itemBGBytes;
         string formatType;
-
+        
         switch (imgFormat)
         {
             case ExportFormat.PNG:
@@ -80,11 +80,6 @@ public class TerrainExporter
         List<Vector2> tempPoints = new List<Vector2>();
         List<Vector2> correctPoints = new List<Vector2>();
 
-        // maxPos.Set(currentPath.path.GetPoints[0].x, currentPath.path.GetPoints[0].y);
-        // minPos.Set(currentPath.path.GetPoints[0].x, currentPath.path.GetPoints[0].y);
-
-
-
         foreach (Vector2 v in currentPath.collider.points)
         {
             if (minPos.x > v.x)
@@ -109,6 +104,12 @@ public class TerrainExporter
 
         textureWidth = Vector2.Distance(new Vector2(minPos.x, 0), new Vector2(maxPos.x, 0));
         textureHeight = Vector2.Distance(new Vector2(0, minPos.y), new Vector2(0, maxPos.y));
+
+        if(textureHeight > 10000 || textureWidth > 10000)
+        {
+            Debug.LogWarning("File dimensions exceed 10000 pixels");
+        }
+
         if (ppi < 1)
         {
             ppi = 1;

@@ -44,9 +44,13 @@ public class PathEditor : Editor
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Offset");
+        GUILayout.Label("Start/End Size");
         creator.VOffset = EditorGUILayout.FloatField(creator.VOffset);
-        creator.UpdateCollider();
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label("Seed");
+        creator.Seed = EditorGUILayout.IntField(creator.Seed);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
@@ -58,6 +62,8 @@ public class PathEditor : Editor
         GUILayout.Label("End Type");
         creator.EndTerrain = (PathGenerator.SEType)EditorGUILayout.EnumPopup(creator.EndTerrain);
         EditorGUILayout.EndHorizontal();
+
+        creator.UpdateCollider();
 
         if (GUILayout.Button("Open Terrain Exporter"))
         {
@@ -87,7 +93,7 @@ public class PathEditor : Editor
         }
         if (guiEvent.type == EventType.MouseDown && guiEvent.button == 1 && guiEvent.shift)
         {
-            float minDstToPoint = 0.1f;
+            float minDstToPoint = 0.15f;
             int closestPointIndex = -1;
 
             for(int i = 0; i < path.NumPoints; i++)
