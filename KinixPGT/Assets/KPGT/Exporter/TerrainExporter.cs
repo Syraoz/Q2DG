@@ -11,11 +11,14 @@ public class TerrainExporter
     {
         PNG, JPG, TGA
     }
-
+    [SerializeField, HideInInspector]
     private Color backgroundColor;
+    [SerializeField, HideInInspector]
     private Color colliderColor;
+    [SerializeField, HideInInspector]
     private int ppi;
     private string fileName;
+    [SerializeField, HideInInspector]
     private int margin;
 
     private Texture2D bgPicture;

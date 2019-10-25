@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+    
+[System.Serializable]
 public class PathGenerator : MonoBehaviour
 {
 
@@ -15,26 +16,29 @@ public class PathGenerator : MonoBehaviour
     List<Vector2> playerRoute;
     List<Vector2> noisedSegments;
 
-    [HideInInspector]
+    [SerializeField, HideInInspector]
     public EdgeCollider2D collider;
 
     [SerializeField]
     private float[,] noiseMap;
 
-    //Noise Tests:
-    private int mapW = 10;
-    private int mapH = 1;
-
     //Floats
+    [SerializeField, HideInInspector]
     private float seValue;
+    [SerializeField, HideInInspector]
     private float amplitude;
+    [SerializeField, HideInInspector]
     private int frequency;
+    [SerializeField, HideInInspector]
     private float scale;
 
+    [SerializeField, HideInInspector]
     private int currentSeed;
 
     //Start End Types
+    [SerializeField, HideInInspector]
     private SEType terrainStart;
+    [SerializeField, HideInInspector]
     private SEType terrainEnd;
 
 
@@ -78,8 +82,6 @@ public class PathGenerator : MonoBehaviour
 
     public void RandomizeTerrain()
     {
-
-        NoiseGeneration();
 
         if (collider != null)
         {
@@ -153,11 +155,6 @@ public class PathGenerator : MonoBehaviour
             collider.points = tempPoints.ToArray();
         }
 
-    }
-
-    void NoiseGeneration()
-    {
-        noiseMap = Noise.GenerateNoiseMap(mapW, mapH, frequency, scale);
     }
 
     public float VOffset

@@ -11,7 +11,7 @@ public class MainWindow : EditorWindow
     public static void ShowWindow()
     {
         MainWindow window = GetWindow<MainWindow>("KPGT");
-        window.minSize = new Vector2(600, 300);
+        window.minSize = new Vector2(600, 350);
         
     }
 
@@ -46,6 +46,6 @@ public class MainWindow : EditorWindow
 
         GUILayout.Space(130);
 
-        GUILayout.Label("KPGT Beta v1.0");
+        GUILayout.Label("KPGT Beta v1.2");
     }
 }
