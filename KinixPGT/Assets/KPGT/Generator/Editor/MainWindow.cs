@@ -17,12 +17,12 @@ public class MainWindow : EditorWindow
 
     void OnGUI()
     {
-        GUILayout.Label("Generator");
+        GUILayout.Label("Terrain Setup");
 
-        GUILayout.Label("Terrain Name");
+        GUILayout.Label("Terrain Name:");
         objectName = GUILayout.TextField(objectName);
 
-        if (GUILayout.Button("Generate")){
+        if (GUILayout.Button("Create Base")){
 
             GameObject newTerrain = new GameObject();
             newTerrain.name = objectName;
@@ -31,10 +31,11 @@ public class MainWindow : EditorWindow
             if (newTerrain.GetComponent<PathGenerator>() != null)
             {
                 GUIContent gUI = new GUIContent
-                {
-                    text = "Terrain gameobject generated"
+                {       
+                    text = "Terrain Gameobject Created"
                 };
                 GetWindow<MainWindow>("KinixPGT").ShowNotification(gUI);
+                Selection.activeGameObject = newTerrain;
             }
         }
 
@@ -46,6 +47,6 @@ public class MainWindow : EditorWindow
 
         GUILayout.Space(130);
 
-        GUILayout.Label("KPGT Beta v1.2");
+        GUILayout.Label("KPGT Beta v1.2.1");
     }
 }

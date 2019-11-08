@@ -49,8 +49,7 @@ public class PathEditor : Editor
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Seed");
-        creator.Seed = EditorGUILayout.IntField(creator.Seed);
+        creator.Seed = EditorGUILayout.IntField(new GUIContent("Seed", "This is the tooltip"), creator.Seed);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.BeginHorizontal();

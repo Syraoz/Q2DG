@@ -20,6 +20,8 @@ public class TerrainExporter
     private string fileName;
     [SerializeField, HideInInspector]
     private int margin;
+    [SerializeField, HideInInspector]
+    private bool segmentPicture; 
 
     private Texture2D bgPicture;
     private ExportFormat imgFormat;

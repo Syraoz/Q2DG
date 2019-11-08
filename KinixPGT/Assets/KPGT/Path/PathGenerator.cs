@@ -237,7 +237,8 @@ public class PathGenerator : MonoBehaviour
         }
         set
         {
-            currentSeed = value;
+            
+                currentSeed = value;
         }
     }
 }
