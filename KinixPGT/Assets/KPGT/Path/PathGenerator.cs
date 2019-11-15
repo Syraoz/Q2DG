@@ -51,7 +51,8 @@ public class PathGenerator : MonoBehaviour
     {
         if (collider != null)
         {
-           RandomizeTerrain();
+            RandomizeTerrain();
+            //UpdatePath();
         }
     }
 
@@ -105,29 +106,29 @@ public class PathGenerator : MonoBehaviour
                 magnitud = direction.magnitude;
                 direction.Normalize();
 
-                for (int s = 1; s < frequency;  s++)
+                for (int s = 1; s < frequency; s++)
                 {
                     Vector2 newPoint = refPoints[i] + direction * (magnitud / frequency) * (s);
                     tempPoints.Insert(i + ((frequency - 1) * i) + (s), newPoint);
-                   
+
                 }
             }
 
-            if(terrainStart == SEType.cliff)
+            if (terrainStart == SEType.cliff)
             {
                 tempPoints.Insert(0, new Vector2(tempPoints[0].x, tempPoints[0].y - seValue));
             }
-            if(terrainStart == SEType.wall)
+            if (terrainStart == SEType.wall)
             {
                 tempPoints.Insert(0, new Vector2(tempPoints[0].x, tempPoints[0].y + seValue));
             }
-            if(terrainEnd == SEType.cliff)
+            if (terrainEnd == SEType.cliff)
             {
-                tempPoints.Insert(tempPoints.Count, new Vector2(tempPoints[tempPoints.Count-1].x, tempPoints[tempPoints.Count-1].y - seValue));
+                tempPoints.Insert(tempPoints.Count, new Vector2(tempPoints[tempPoints.Count - 1].x, tempPoints[tempPoints.Count - 1].y - seValue));
             }
-            if(terrainEnd == SEType.wall)
+            if (terrainEnd == SEType.wall)
             {
-                tempPoints.Insert(tempPoints.Count, new Vector2(tempPoints[tempPoints.Count-1].x, tempPoints[tempPoints.Count-1].y + seValue));
+                tempPoints.Insert(tempPoints.Count, new Vector2(tempPoints[tempPoints.Count - 1].x, tempPoints[tempPoints.Count - 1].y + seValue));
             }
 
             if (!(amplitude <= 0))
@@ -142,7 +143,7 @@ public class PathGenerator : MonoBehaviour
 
                     // Nuevas capas de ruidos, no todo en uno solo
 
-                    float x = Mathf.PerlinNoise(i * (amplitude / 10 ) / tempPoints.Count + offsetRandomX, 0 + offsetRandomY);
+                    float x = Mathf.PerlinNoise(i * (amplitude / 10) / tempPoints.Count + offsetRandomX, 0 + offsetRandomY);
                     float y = Mathf.PerlinNoise(i * amplitude / tempPoints.Count + offsetRandomX, 1000 + offsetRandomY);
 
 
@@ -155,6 +156,25 @@ public class PathGenerator : MonoBehaviour
             collider.points = tempPoints.ToArray();
         }
 
+    }
+
+    /*public void UpdatePath()
+    {
+        List<Vector2> tempPoints = new List<Vector2>();
+        foreach (Vector2 v in path.GetPoints)
+        {
+            tempPoints.Add(v);
+        }
+        for (int i = 0; i < tempPoints.Count; i++)
+        {
+            tempPoints[i] += (Vector2)gameObject.transform.position;
+        }
+        path.SetPoints = tempPoints;
+    }*/
+
+    public void GenerateNewSeed()
+    {
+        currentSeed = Random.Range(100000000, 999999999);
     }
 
     public float VOffset
@@ -238,7 +258,7 @@ public class PathGenerator : MonoBehaviour
         set
         {
             
-                currentSeed = value;
+            currentSeed = value;
         }
     }
 }

@@ -13,7 +13,60 @@ public class PathEditor : Editor
     {
         base.OnInspectorGUI();
 
-        if(GUILayout.Button("Reset points"))
+        /*if(GUILayout.Button("Generate Terrain"))
+        {
+            Undo.RecordObject(creator, "Terrain Altered");
+            creator.RandomizeTerrain();
+        }*/
+
+        EditorGUILayout.BeginHorizontal();
+        creator.TAmplitude = EditorGUILayout.FloatField(new GUIContent("Detail of Frequency",
+            "This value is used to determine the frequency of the noise, higher values mean more changes in the terrain."), creator.TAmplitude);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label(new GUIContent("Collider Density", "This value is used to determine how smooth your terrain is, higher values mean more points per segment."));
+        creator.TFrequency = EditorGUILayout.IntSlider(creator.TFrequency,0,100);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        creator.VOffset = EditorGUILayout.FloatField(new GUIContent("Start/End Size", 
+            "This value is used for the size of the collider at the start and end of your terrain. Size is measured in Unity units."), creator.VOffset);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label(new GUIContent("Seed",
+            "This value is used to generate a unique noise with your given values."));
+        if (GUILayout.Button(new GUIContent("New Seed",
+             "This will generate a completely new seed number.")))
+        {
+            Undo.RecordObject(creator, "New Seed");
+            creator.GenerateNewSeed();
+        }
+        creator.Seed = EditorGUILayout.IntField(creator.Seed);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label(new GUIContent("Start Type","Determines how the terrain starts."));
+        creator.StartTerrain = (PathGenerator.SEType)EditorGUILayout.EnumPopup(creator.StartTerrain);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Label(new GUIContent("End Type","Determines how the terrain ends."));
+        creator.EndTerrain = (PathGenerator.SEType)EditorGUILayout.EnumPopup(creator.EndTerrain);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.Space();
+
+
+        if (GUILayout.Button(new GUIContent(creator.GetComponent<EdgeCollider2D>() != null ? "Disable Collider" : "Enable Collider",
+            "Disables or enables the collider of the gameobject.")))
+        {
+            creator.ToggleCollider();
+        }
+            
+        if (GUILayout.Button(new GUIContent("Reset points",
+            "This will reset all the points of your base terrain lines.")))
         {
             Undo.RecordObject(creator, "Points reset");
             creator.GeneratePath();
@@ -21,46 +74,6 @@ public class PathEditor : Editor
             creator.UpdateCollider();
             SceneView.RepaintAll();
         }
-
-        if (GUILayout.Button(creator.GetComponent<EdgeCollider2D>() != null ? "Collider ON" : "Collider OFF"))
-        {
-            creator.ToggleCollider();
-        }
-
-        if(GUILayout.Button("Generate Terrain"))
-        {
-            Undo.RecordObject(creator, "Terrain Altered");
-            creator.RandomizeTerrain();
-        }
-
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Amplitude");
-        creator.TAmplitude = EditorGUILayout.FloatField(creator.TAmplitude);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Details");
-        creator.TFrequency = EditorGUILayout.IntField(creator.TFrequency);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Start/End Size");
-        creator.VOffset = EditorGUILayout.FloatField(creator.VOffset);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        creator.Seed = EditorGUILayout.IntField(new GUIContent("Seed", "This is the tooltip"), creator.Seed);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("Start Type");
-        creator.StartTerrain = (PathGenerator.SEType)EditorGUILayout.EnumPopup(creator.StartTerrain);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.Label("End Type");
-        creator.EndTerrain = (PathGenerator.SEType)EditorGUILayout.EnumPopup(creator.EndTerrain);
-        EditorGUILayout.EndHorizontal();
 
         creator.UpdateCollider();
 

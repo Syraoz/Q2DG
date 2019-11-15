@@ -31,6 +31,14 @@ public class TerrainExporter
 
     public PathGenerator currentPath;
 
+    public TerrainExporter()
+    {
+        backgroundColor = Color.black;
+        colliderColor = Color.white;
+        ppi = 100;
+
+    }
+
     public bool ExportTerrainAs()
     { 
 
@@ -58,7 +66,6 @@ public class TerrainExporter
                 break;
         }
 
-        ///TODO: Write a code that generated the path if it doesnt exist to avoid any expection
         string checkDir = Application.dataPath + "/KPGT/ExportedImages/";
         if (!Directory.Exists(checkDir))
         {

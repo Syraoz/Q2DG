@@ -41,14 +41,19 @@ public class Path
         }
     }
 
-    /// <summary>
-    /// Get THE DAMN POINTS CJ
-    /// </summary>
     public Vector2[] GetPoints
     {
         get
         {
             return points.ToArray();
+        }
+    }
+
+    public List<Vector2> SetPoints
+    {
+        set
+        {
+            points = value;
         }
     }
 

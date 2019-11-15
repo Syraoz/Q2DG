@@ -21,12 +21,12 @@ public class ExporterEditor : EditorWindow
             GUILayout.Space(20);
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("File Name");
+            GUILayout.Label(new GUIContent("File Name:", "Name the file of the exported image."));
             terrain.Name = EditorGUILayout.TextField(terrain.Name);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Export as...");
+            GUILayout.Label(new GUIContent("Export as...", "Format of the image to be exported."));
             terrain.ImageFormat = (TerrainExporter.ExportFormat)EditorGUILayout.EnumPopup(terrain.ImageFormat);
             EditorGUILayout.EndHorizontal();
 
@@ -41,12 +41,12 @@ public class ExporterEditor : EditorWindow
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Pixels per Unit");
+            GUILayout.Label(new GUIContent("Pixels per Unit","Amount of pixels per unit of Unity. The standard is 100 pixels per unit."));
             terrain.PixelsPerUnit = EditorGUILayout.IntField(terrain.PixelsPerUnit);
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            GUILayout.Label("Image Margin");
+            GUILayout.Label(new GUIContent("Image Margin", "Margin from the border of the image to the first pixel of the collider in the image."));
             terrain.Margin = EditorGUILayout.IntField(terrain.Margin);
             EditorGUILayout.EndHorizontal();
 
