@@ -17,16 +17,27 @@ public class MainWindow : EditorWindow
 
     void OnGUI()
     {
-        GUILayout.Label("Terrain Setup");
+
+        GUIStyle headerStyle = new GUIStyle(GUI.skin.label)
+        {
+            fontSize = 15,
+            fontStyle = FontStyle.Bold,
+            fixedHeight = 30
+        };
+
+        GUILayout.Label("Terrain Setup",headerStyle);
 
         GUILayout.Label("Terrain Name:");
         objectName = GUILayout.TextField(objectName);
 
         if (GUILayout.Button("Create Base")){
 
-            GameObject newTerrain = new GameObject();
-            newTerrain.name = objectName;
+            GameObject newTerrain = new GameObject
+            {
+                name = objectName
+            };
             newTerrain.AddComponent<PathGenerator>();
+            newTerrain.GetComponent<PathGenerator>().collider = newTerrain.AddComponent<EdgeCollider2D>();
 
             if (newTerrain.GetComponent<PathGenerator>() != null)
             {
@@ -47,6 +58,6 @@ public class MainWindow : EditorWindow
 
         GUILayout.Space(130);
 
-        GUILayout.Label("KPGT Beta v1.4");
+        GUILayout.Label("KPGT Beta v2.0");
     }
 }

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 [System.Serializable]
 public class Path
 {
     //Propieties
-    [SerializeField,HideInInspector]
+    [SerializeField, HideInInspector]
     List<Vector2> points;
 
     public Path(Vector2 startPos)
@@ -60,6 +61,11 @@ public class Path
     public void AddPoint(Vector2 pos)
     {
         points.Add(pos);
+    }
+
+    public void AddPointStart(Vector2 pos)
+    {
+        points.Insert(0, pos);
     }
 
     public void RemovePoint(int pointIndex)

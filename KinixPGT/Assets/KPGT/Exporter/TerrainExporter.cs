@@ -39,6 +39,12 @@ public class TerrainExporter
 
     }
 
+    /// TODO:
+    ///         Have an option to detect the resolution from the start. Show a warning
+    ///         If the image passes a certain size, give the option to divide the image in a maximum size of 10k x 10k
+    ///         Draw the new whole collider
+
+
     public bool ExportTerrainAs()
     { 
 
@@ -117,27 +123,29 @@ public class TerrainExporter
         textureWidth = Vector2.Distance(new Vector2(minPos.x, 0), new Vector2(maxPos.x, 0));
         textureHeight = Vector2.Distance(new Vector2(0, minPos.y), new Vector2(0, maxPos.y));
 
-        if(textureHeight > 10000 || textureWidth > 10000)
+        if (textureHeight * ppi > 10000 || textureWidth * ppi > 10000)
         {
             Debug.LogWarning("File dimensions exceed 10000 pixels");
         }
-
-        if (ppi < 1)
+        else
         {
-            ppi = 1;
+            if (ppi < 1)
+            {
+                ppi = 1;
+            }
+
+            bgPicture = new Texture2D((int)(textureWidth * ppi) + 2 + margin, (int)(textureHeight * ppi) + 2 + margin);
+
+            correctPoints = CenterCollider(tempPoints, minPos);
+
+            SetBackgroundColor();
+
+            for (int i = 0; i < correctPoints.Count - 1; i++)
+            {
+                DrawLine(correctPoints[i], correctPoints[i + 1], colliderColor);
+            }
+
         }
-
-        bgPicture = new Texture2D((int)(textureWidth * ppi) + 5 + margin, (int)(textureHeight * ppi) + 5 + margin);
-
-        correctPoints = CenterCollider(tempPoints, minPos);
-
-        SetBackgroundColor();
-
-        for (int i = 0; i < correctPoints.Count - 1; i++)
-        {
-            DrawLine(correctPoints[i], correctPoints[i + 1], colliderColor);
-        }
-
     }
 
     void SetBackgroundColor()
@@ -252,7 +260,6 @@ public class TerrainExporter
             }
         }
     }
-
     public Color BGColor
     {
         get
@@ -297,7 +304,6 @@ public class TerrainExporter
             fileName = value;
         }
     }
-
     public int Margin
     {
         get
@@ -309,7 +315,6 @@ public class TerrainExporter
             margin = value;
         }
     }
-
     public ExportFormat ImageFormat
     {
         get
@@ -321,4 +326,5 @@ public class TerrainExporter
             imgFormat = value;
         }
     }
+
 }
