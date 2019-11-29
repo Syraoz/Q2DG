@@ -49,6 +49,7 @@ public class PathEditor : Editor
         {
             Undo.RecordObject(creator, "Points Reset");
             creator.GeneratePath();
+            creator.ResetSubPaths();
             path = creator.path;
             creator.UpdateCollider();
             SceneView.RepaintAll();

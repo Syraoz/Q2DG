@@ -13,6 +13,6 @@ public class RotateCute : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        gameObject.transform.Rotate(new Vector3(0, 0, 1));
+        gameObject.transform.Rotate(new Vector3(0, 0, 2));
     }
 }

@@ -58,7 +58,13 @@ public class PathGenerator : MonoBehaviour
     public void GeneratePath()
     {
         path = new Path(transform.position);
-    }   
+    }
+    public void ResetSubPaths()
+    {
+        subColliders = new List<EdgeCollider2D>();
+        subPathedPoints = new List<Vector2>();
+        subPaths = new List<Path>();
+    }
 
     public void GenerateSubPath(Vector2 startPos, Vector2 connectedPos)
     {
@@ -252,7 +258,7 @@ public class PathGenerator : MonoBehaviour
                 {
                     if (subPaths[p][0] == path[i])
                     {
-                        tempPoints[0] = colliderPoints[i * details];
+                        tempPoints[0] = colliderPoints[i * details + 1];
                     }
                 }
 
