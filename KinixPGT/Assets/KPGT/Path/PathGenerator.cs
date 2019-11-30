@@ -29,6 +29,8 @@ public class PathGenerator : MonoBehaviour
     private int details; 
     [SerializeField, HideInInspector]
     private float scale;
+    [SerializeField, HideInInspector]
+    private bool connectPaths;
 
     [SerializeField, HideInInspector]
     private int currentSeed;
@@ -99,13 +101,15 @@ public class PathGenerator : MonoBehaviour
 
     /// <summary>
     /// TODO: 
-    ///        HIGH PRIORITY
+    ///        LOW PRIORITY
     ///                 Upgrade the method of terrain generation
     ///                 Take in acount the size of the segment for sub segmentation
     ///                 Take in account angle for height variations
     ///                 More values to customize
+    ///                 Fix terrain start/end variables being used backwards
     ///        MED PRIORITY
-    ///                 Being able to start the collider from the second point, leaving a gap
+    ///                 Being able to choose what colliders are connected (Just make a list of bools for each collider
+    ///                 WARNING: Making a new class seems like it might be better in the long run, watch out for debt 
     /// </summary>
     public void RandomizeTerrain()
     {
@@ -143,19 +147,19 @@ public class PathGenerator : MonoBehaviour
 
             //Set the ending and start of the terrain, this only should affect the main path
 
-            if (terrainStart == SEType.cliff)
+            if (terrainEnd == SEType.cliff)
             {
                 tempPoints.Insert(0, new Vector2(tempPoints[0].x, tempPoints[0].y - seValue));
             }
-            if (terrainStart == SEType.wall)
+            if (terrainEnd == SEType.wall)
             {
                 tempPoints.Insert(0, new Vector2(tempPoints[0].x, tempPoints[0].y + seValue));
             }
-            if (terrainEnd == SEType.cliff)
+            if (terrainStart == SEType.cliff)
             {
                 tempPoints.Insert(tempPoints.Count, new Vector2(tempPoints[tempPoints.Count - 1].x, tempPoints[tempPoints.Count - 1].y - seValue));
             }
-            if (terrainEnd == SEType.wall)
+            if (terrainStart == SEType.wall)
             {
                 tempPoints.Insert(tempPoints.Count, new Vector2(tempPoints[tempPoints.Count - 1].x, tempPoints[tempPoints.Count - 1].y + seValue));
             }
@@ -197,6 +201,7 @@ public class PathGenerator : MonoBehaviour
         {
             if (subColliders[p] != null)
             {
+
                 List<Vector2> tempPoints = new List<Vector2>();
                 List<Vector2> refPoints = new List<Vector2>();
                 foreach (Vector2 v in subPaths[p].GetPoints)
@@ -205,10 +210,16 @@ public class PathGenerator : MonoBehaviour
                     refPoints.Add(v);
                 }
 
+                if (!connectPaths)
+                {
+                    tempPoints.RemoveAt(0);
+                    refPoints.RemoveAt(0);
+                }
+
                 float magnitud;
                 Vector2 direction;
 
-                for (int i = 0; i < subPaths[p].NumSegments; i++)
+                for (int i = 0; i < refPoints.Count - 1; i++)
                 {
                     direction = refPoints[i + 1] - refPoints[i];
                     magnitud = direction.magnitude;
@@ -244,45 +255,49 @@ public class PathGenerator : MonoBehaviour
                     }
 
                 }
-                
-                
-                //Get the main collider
-                List<Vector2> colliderPoints = new List<Vector2>();
-                foreach (Vector2 v in collider.points)
-                {
-                    colliderPoints.Add(v);
-                }
 
-                //check if the point is branched from the mainpath
-                for (int i = 0; i < path.NumPoints; i++)
+                //If the paths shouldn't be connected, we shouldn't worry about connecting the first point of the colliders
+                if (connectPaths)
                 {
-                    if (subPaths[p][0] == path[i])
+                    //Get the main collider
+                    List<Vector2> colliderPoints = new List<Vector2>();
+                    foreach (Vector2 v in collider.points)
                     {
-                        tempPoints[0] = colliderPoints[i * details + 1];
+                        colliderPoints.Add(v);
                     }
-                }
 
-                for (int i = 0; i < subPaths.Count; i++)
-                {
-                    if (i != p)
+                    //Check if the point is branched from the main path
+                    for (int i = 0; i < path.NumPoints; i++)
                     {
-                        //Get current subpath
-                        List<Vector2> subColliderPoints = new List<Vector2>();
-                        foreach (Vector2 v in subColliders[i].points)
+                        if (subPaths[p][0] == path[i])
                         {
-                            subColliderPoints.Add(v);
+                            tempPoints[0] = colliderPoints[i * details];
                         }
+                    }
 
-                        for (int j = 1; j < subPaths[i].NumPoints; j++)
+                    //Check if the point is branched from a subpath
+                    for (int i = 0; i < subPaths.Count; i++)
+                    {
+                        if (i != p)
                         {
-                            if (subPaths[p][0] == subPaths[i][j])
+                            //Get current subpath
+                            List<Vector2> subColliderPoints = new List<Vector2>();
+                            foreach (Vector2 v in subColliders[i].points)
                             {
-                                tempPoints[0] = subColliderPoints[j * details];
+                                subColliderPoints.Add(v);
+                            }
+
+                            for (int j = 1; j < subPaths[i].NumPoints; j++)
+                            {
+                                if (subPaths[p][0] == subPaths[i][j])
+                                {
+                                    tempPoints[0] = subColliderPoints[j * details];
+                                }
                             }
                         }
                     }
                 }
-                
+
                 subColliders[p].points = tempPoints.ToArray();
             }
         }
@@ -393,6 +408,18 @@ public class PathGenerator : MonoBehaviour
         set
         {
             handlesize = value;
+        }
+    }
+
+    public bool ConnectSubPaths
+    {
+        get
+        {
+            return connectPaths;
+        }
+        set
+        {
+            connectPaths = value; 
         }
     }
 

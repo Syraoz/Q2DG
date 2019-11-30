@@ -58,6 +58,6 @@ public class MainWindow : EditorWindow
 
         GUILayout.Space(130);
 
-        GUILayout.Label("KPGT Beta v2.0");
+        GUILayout.Label("KPGT Beta v2.1");
     }
 }

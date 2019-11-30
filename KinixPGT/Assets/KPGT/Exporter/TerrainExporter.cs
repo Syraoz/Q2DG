@@ -40,9 +40,10 @@ public class TerrainExporter
     }
 
     /// TODO:
+    ///     LOW PRIORITY    
     ///         Have an option to detect the resolution from the start. Show a warning
+    ///     MED PRIORITY
     ///         If the image passes a certain size, give the option to divide the image in a maximum size of 10k x 10k
-    ///         Draw the new whole collider
 
 
     public bool ExportTerrainAs()
@@ -72,14 +73,15 @@ public class TerrainExporter
                 break;
         }
 
-        string checkDir = Application.dataPath + "/KPGT/ExportedImages/";
+        //Check if the directory exists
+        string checkDir = Application.dataPath + "/Exported_Terrains/";
         if (!Directory.Exists(checkDir))
         {
-            Directory.CreateDirectory(Application.dataPath + "/KPGT/ExportedImages/");
+            Directory.CreateDirectory(Application.dataPath + "/Exported_Terrains/");
         }
         try
         {
-            File.WriteAllBytes(Application.dataPath + "/KPGT/ExportedImages/" + fileName + formatType, itemBGBytes);
+            File.WriteAllBytes(Application.dataPath + "/Exported_Terrains/" + fileName + formatType, itemBGBytes);
             return true;
         }
         catch (Exception e)
@@ -89,7 +91,6 @@ public class TerrainExporter
         }
     }
 
-
     void DrawColliderToTexture()
     {
         Vector2 maxPos = new Vector2(0, 0);
@@ -98,6 +99,7 @@ public class TerrainExporter
         List<Vector2> tempPoints = new List<Vector2>();
         List<Vector2> correctPoints = new List<Vector2>();
 
+        //Check main collider dimensions
         foreach (Vector2 v in currentPath.collider.points)
         {
             if (minPos.x > v.x)
@@ -120,6 +122,41 @@ public class TerrainExporter
             tempPoints.Add(v);
         }
 
+        //Check subpaths
+        List<List<Vector2>> subTempPoints = new List<List<Vector2>>();
+        List<List<Vector2>> subCorrectPoints = new List<List<Vector2>>();
+
+        if(currentPath.subColliders.Count != 0)
+        {
+            for (int i = 0; i < currentPath.subColliders.Count; i++)
+            {
+                subCorrectPoints.Add(new List<Vector2>());
+                subTempPoints.Add(new List<Vector2>());
+                foreach (Vector2 v in currentPath.subColliders[i].points)
+                {
+                    if (minPos.x > v.x)
+                    {
+                        minPos.x = v.x;
+                    }
+                    if (minPos.y > v.y)
+                    {
+                        minPos.y = v.y;
+                    }
+                    if (maxPos.x < v.x)
+                    {
+                        maxPos.x = v.x;
+                    }
+                    if (maxPos.y < v.y)
+                    {
+                        maxPos.y = v.y;
+                    }
+                    subTempPoints[i].Add(v);
+                    subCorrectPoints[i].Add(new Vector2());
+                }
+            }
+        }
+
+        //Get the image dimensions, make sure it doesnt exceed 10,000 x 10,000
         textureWidth = Vector2.Distance(new Vector2(minPos.x, 0), new Vector2(maxPos.x, 0));
         textureHeight = Vector2.Distance(new Vector2(0, minPos.y), new Vector2(0, maxPos.y));
 
@@ -129,22 +166,35 @@ public class TerrainExporter
         }
         else
         {
-            if (ppi < 1)
-            {
-                ppi = 1;
-            }
+            if (ppi < 1) {ppi = 1;}
 
             bgPicture = new Texture2D((int)(textureWidth * ppi) + 2 + margin, (int)(textureHeight * ppi) + 2 + margin);
 
+            //Center the main path collider
             correctPoints = CenterCollider(tempPoints, minPos);
+
+            //Center the subpath colliders
+            for (int i = 0; i < currentPath.subColliders.Count; i++)
+            {
+                subCorrectPoints[i] = CenterCollider(subTempPoints[i], minPos);
+            }
 
             SetBackgroundColor();
 
+            //Draw main path lines
             for (int i = 0; i < correctPoints.Count - 1; i++)
             {
                 DrawLine(correctPoints[i], correctPoints[i + 1], colliderColor);
             }
 
+            //Draw subpath lines
+            for (int i = 0; i < subCorrectPoints.Count; i++)
+            {
+                for(int j = 0; j < subCorrectPoints[i].Count - 1; j++)
+                {
+                    DrawLine(subCorrectPoints[i][j], subCorrectPoints[i][j + 1], colliderColor);
+                }
+            }
         }
     }
 
@@ -260,6 +310,12 @@ public class TerrainExporter
             }
         }
     }
+
+    public void CheckDimensions()
+    {
+
+    }
+
     public Color BGColor
     {
         get

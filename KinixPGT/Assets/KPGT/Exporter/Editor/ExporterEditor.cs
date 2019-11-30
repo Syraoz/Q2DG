@@ -50,6 +50,8 @@ public class ExporterEditor : EditorWindow
             terrain.Margin = EditorGUILayout.IntField(terrain.Margin);
             EditorGUILayout.EndHorizontal();
 
+
+
             if (GUILayout.Button("Export terrain"))
             {
                 if (terrain.ExportTerrainAs())

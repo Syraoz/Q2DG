@@ -44,6 +44,9 @@ public class PathEditor : Editor
         creator.TDetails = EditorGUILayout.IntSlider(new GUIContent("Collider Density",
             "This value is used to determine how smooth your terrain is, higher values mean more points per segment."),creator.TDetails, 1, 100);
 
+        creator.ConnectSubPaths = EditorGUILayout.Toggle(new GUIContent("Connect Paths",
+            "This value determines if the colliders of the subpaths get connected to where they branch from."), creator.ConnectSubPaths);
+
         if (GUILayout.Button(new GUIContent("Reset points",
             "This will reset all the points of your base terrain lines.")))
         {
