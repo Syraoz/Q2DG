@@ -13,11 +13,14 @@ public class PathGenerator : MonoBehaviour
 
     [HideInInspector]
     public Path path;
+    [SerializeField, HideInInspector]
     public List<Path> subPaths;
 
     [SerializeField, HideInInspector]
     public EdgeCollider2D collider;
+    [SerializeField, HideInInspector]
     public List<EdgeCollider2D> subColliders;
+    [SerializeField, HideInInspector]
     public List<Vector2> subPathedPoints;
 
     //Floats, values for the terrain as a whole

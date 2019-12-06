@@ -51,6 +51,7 @@ public class MainWindow : EditorWindow
         }
 
         GUILayout.Space(50);
+        GUILayout.Label("Click and drag handles with Left-click");
 
         GUILayout.Label("While holding shift:");
         GUILayout.Label("Left-click to create a new point from the last one.");
@@ -58,6 +59,6 @@ public class MainWindow : EditorWindow
 
         GUILayout.Space(130);
 
-        GUILayout.Label("KPGT Beta v2.1");
+        GUILayout.Label("KPGT Beta v2.1.1");
     }
 }
