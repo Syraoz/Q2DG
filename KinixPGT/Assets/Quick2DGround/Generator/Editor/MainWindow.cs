@@ -7,10 +7,10 @@ public class MainWindow : EditorWindow
     private string objectName;
     private Vector2 pos;
 
-    [MenuItem("Tools/KPGT")]
+    [MenuItem("Tools/Q2DG")]
     public static void ShowWindow()
     {
-        MainWindow window = GetWindow<MainWindow>("KPGT");
+        MainWindow window = GetWindow<MainWindow>("Q2DG");
         window.minSize = new Vector2(600, 350);
         
     }
@@ -45,7 +45,7 @@ public class MainWindow : EditorWindow
                 {       
                     text = "Terrain Gameobject Created"
                 };
-                GetWindow<MainWindow>("KinixPGT").ShowNotification(gUI);
+                GetWindow<MainWindow>("Quick2DGround").ShowNotification(gUI);
                 Selection.activeGameObject = newTerrain;
             }
         }
@@ -59,6 +59,6 @@ public class MainWindow : EditorWindow
 
         GUILayout.Space(130);
 
-        GUILayout.Label("KPGT Beta v2.1.1");
+        GUILayout.Label("Quick 2D Ground - Beta 2.2");
     }
 }
